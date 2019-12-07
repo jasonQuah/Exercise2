@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         val a = findViewById<EditText>(R.id.editTextHeight)
         val b = findViewById<EditText>(R.id.editTextWeight)
         val c = findViewById<TextView>(R.id.textViewBMI)
+        val d = findViewById<TextView>(R.id.bmiTotal)
 
         val image = findViewById<ImageView>(R.id.imageViewProfile)
 
@@ -23,22 +24,34 @@ class MainActivity : AppCompatActivity() {
         val clear = findViewById<Button>(R.id.buttonReset)
 
         calculate.setOnClickListener {
-            val weight = a.text.toString().toDouble()
-            val height = b.text.toString().toDouble() / 100
-            val bmi = weight / (height * height)
+            val height = a.text.toString()
+            val weight = b.text.toString()
 
-            when (bmi) {
-                in Double.MIN_VALUE..18.4 -> {
-                    c.append("Underweight")
-                    image.setImageResource(R.drawable.under)
-                }
-                in 18.5..24.9 -> {
-                    c.append("Normal")
-                    image.setImageResource(R.drawable.normal)
-                }
-                in 25.0..Double.MAX_VALUE -> {
-                    c.append("Overweight")
-                    image.setImageResource(R.drawable.over)
+            if (weight.equals("") || height.equals("")) {
+                Toast.makeText(
+                    applicationContext, getString(R.string.input_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val height2 = height.toDouble() / 100
+                val bmi = weight.toDouble() / (height2 * height2)
+
+                when (bmi) {
+                    in 0.0..18.4 -> {
+                        c.setText(getString(R.string.under))
+                        d.setText(String.format("BMI: %.2f", (bmi)))
+                        image.setImageResource(R.drawable.under)
+                    }
+                    in 18.5..24.9 -> {
+                        c.setText(getString(R.string.normal))
+                        d.setText(String.format("BMI: %.2f", (bmi)))
+                        image.setImageResource(R.drawable.normal)
+                    }
+                    else -> {
+                        c.setText(getString(R.string.over))
+                        d.setText(String.format("BMI: %.2f", (bmi)))
+                        image.setImageResource(R.drawable.over)
+                    }
                 }
             }
         }
@@ -46,7 +59,8 @@ class MainActivity : AppCompatActivity() {
         clear.setOnClickListener {
             a.setText("")
             b.setText("")
-            c.setText("BMI :")
+            c.setText(getString(R.string.bmi))
+            d.setText("")
             image.setImageResource(R.drawable.empty)
         }
     }
